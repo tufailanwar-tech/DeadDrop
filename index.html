@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeadDrop — developed in the darkroom</title>
+  <meta name="description" content="DeadDrop hides encrypted text inside ordinary photographs. This page hides 3 notes — find them under the safelight." />
+  <link rel="stylesheet" href="STYLE/style.css" />
+</head>
+<body>
+
+  <div class="uv" id="uv"></div>
+  <div class="lamp" id="lamp"></div>
+
+  <div class="wrap">
+
+    <div class="topbar">
+      <span class="brand">
+        <b>◉</b> DEADDROP · DARKROOM
+      </span>
+      <span class="controls">
+        <span class="found-counter" id="counter">NOTES FOUND: 0/3</span>
+        <button class="uv-toggle" id="uvToggle">SAFELIGHT: ON</button>
+      </span>
+    </div>
+
+    <header class="hero">
+      <div class="kicker">DARKROOM — SAFELIGHT ONLY · NO WHITE LIGHT</div>
+      <h1>
+        THIS PAGE WAS<br>
+        DEVELOPED IN THE <span class="glow">DARK.</span>
+      </h1>
+      <p>
+        Like film in a darkroom, this page hides its image until you bring the light.
+        Your cursor carries the <b>inspection lamp</b> — sweep it across the room and
+        the darkness lifts where you look. <b>3 hidden notes</b> are developed into
+        these walls. DeadDrop does the same trick to photographs: encrypted messages,
+        hidden inside pixels no one thinks to inspect.
+      </p>
+      <div class="cta-row">
+        <a class="btn primary" href="#specimen">EXAMINE SPECIMEN 0 ↓</a>
+        <a class="btn" href="index.html">LAUNCH THE APP →</a>
+      </div>
+      <br>
+      <span class="secret-note" data-note="1">
+        <span class="n">◈ NOTE 1/3 —</span>
+        the best hiding place is in plain sight.
+      </span>
+    </header>
+
+    <section class="block" id="specimen">
+      <div class="sec-label">DEVELOPING TRAY</div>
+      <h2 class="sec">Specimen 0 — dissect a pixel</h2>
+      <div class="panel" data-tag="LIVE SPECIMEN · HANDLE WITH LAMP">
+        <p style="margin:0.2rem 0 0; font-size:0.9rem; color:var(--dim); line-height:1.65">
+          Each pixel's red, green and blue values end in one bit. Flip only that bit —
+          200 → 201 — and no human eye can tell. <b style="color:var(--ink)">Click the cells</b>
+          to flip each pixel's last bit and spell a letter with the hidden byte:
+        </p>
+        <div class="pixels" id="pixels"></div>
+        <div class="readout">
+          hidden byte <code id="hiddenBits">01001000</code> → spells
+          <span class="big-char" id="bigChar">H</span>
+          <span style="font-size:0.8rem">(starts as H — flip bits to spell your initial)</span>
+        </div>
+      </div>
+      <span class="secret-note" data-note="2">
+        <span class="n">◈ NOTE 2/3 —</span>
+        01001000 01001001 is "HI" in binary. Say hi back.
+      </span>
+    </section>
+
+    <section class="block" id="kit">
+      <div class="sec-label">EQUIPMENT CUPBOARD</div>
+      <h2 class="sec">The kit</h2>
+      <div class="panel" data-tag="FORM 12-B · MESSAGE CONCEALMENT UNIT">
+        <div class="kit-grid">
+          <div class="photo-frame">
+            <div class="scan"></div>
+            <span class="ok">✓ CONCEALED</span>
+            <span class="tag">sunset.png · 1920×1080 · scanned clean</span>
+          </div>
+          <div class="kit-fields">
+            <label>MESSAGE FOR CONCEALMENT</label>
+            <div class="fake-field">meet at the old pier, midnight. bring the blue envelope.</div>
+            <label>PASSPHRASE · AES-256</label>
+            <div class="fake-field dim">••••••••••••••••••</div>
+            <div class="meter">
+              <div class="bar"><div></div></div>
+              <div class="lbl">52 / 777,591 bytes — fits easily</div>
+            </div>
+            <div style="margin-top:1.1rem">
+              <a class="btn primary" href="index.html">CONCEAL A REAL MESSAGE →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="sec-label">DEVELOPED FINDINGS</div>
+      <h2 class="sec">Findings</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="icon">🔒</div>
+          <h3>Private by design</h3>
+          <p>No server, no uploads, no tracking. Images and messages never leave the tab.</p>
+        </div>
+        <div class="card">
+          <div class="icon">👁️</div>
+          <h3>Invisible by math</h3>
+          <p>Only the last bit of each pixel changes — the photo looks pixel-identical.</p>
+        </div>
+        <div class="card">
+          <div class="icon">🔑</div>
+          <h3>Password locked</h3>
+          <p>Optional AES-256-GCM. Wrong passphrase and decryption fails silently.</p>
+        </div>
+        <div class="card">
+          <div class="icon">⚡</div>
+          <h3>Zero dependencies</h3>
+          <p>Pure HTML, CSS, JavaScript. No frameworks, no build step, no npm.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="how">
+      <div class="sec-label">CASE FILE</div>
+      <h2 class="sec">How the trick works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="num">01</div>
+          <h3>Text → bits</h3>
+          <p>
+            Message becomes bytes via <code>TextEncoder</code>, then 1s and 0s.
+            "A" is byte 65 = <code>01000001</code>.
+          </p>
+        </div>
+        <div class="step">
+          <div class="num">02</div>
+          <h3>Bits → pixels</h3>
+          <p>
+            Each bit replaces the <b style="color:var(--ink)">last bit</b> of a pixel channel.
+            Below, highlighted bits spell <code>01001000</code> = "H".
+          </p>
+          <div class="hexdump">C8 C9 CA CB CC CD CE CF
+<span class="hl">1100100</span>0 <span class="hl">1100100</span>1 <span class="hl">1100101</span>0 <span class="hl">1100101</span>0
+<span class="hl">1100110</span>1 <span class="hl">1100110</span>0 <span class="hl">1100111</span>0 <span class="hl">1100111</span>0</div>
+        </div>
+        <div class="step">
+          <div class="num">03</div>
+          <h3>The header</h3>
+          <p>
+            9 bytes first: magic <code>STEG</code>, encryption flag, message length.
+            Decode reads it to know a message exists and where it ends.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="final">
+      <h2>READY TO GO <span class="glow">DARK?</span></h2>
+      <p>Open the kit. Drop a photo. Hide your first secret.</p>
+      <a class="btn primary" href="index.html" style="font-size:0.95rem; padding:1rem 2.4rem">LAUNCH DEADDROP →</a>
+    </div>
+
+    <footer>
+      <span class="secret-note" data-note="3" style="margin:0 0 1rem">
+        <span class="n">◈ NOTE 3/3 —</span>
+        you think like a steganographer now.
+      </span>
+      <br>
+      <span id="allFound"></span>
+      This page contained 3 hidden notes. Always courier via PNG — JPEG destroys hidden data.
+    </footer>
+
+  </div>
+
+  <script src="js/landing.js"></script>
+
+</body>
+</html>

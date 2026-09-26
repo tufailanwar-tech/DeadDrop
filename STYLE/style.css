@@ -57,6 +57,13 @@ a {
 .uv.off {
   display: none;
 }
+.uv.open {
+  display: none;
+}
+.lamp.open {
+  display: none;
+}
+
 .lamp {
   position: fixed;
   z-index: 61;
@@ -193,15 +200,30 @@ a {
   display: inline-block;
   margin-top: 1.6rem;
   font-size: 0.8rem;
-  color: var(--amber);
-  border: 1px dashed rgba(255,180,84,0.45);
+  color: transparent;
+  
+  border: 1px dashed transparent;
   border-radius: 6px;
   padding: 0.6rem 1rem;
   background: rgba(255,180,84,0.05);
   opacity: 0.9;
+  transition: color 0.6s ease, border-color 0.6s ease, background-color 0.6s ease, box-shadow 0.6s ease;
 }
 .secret-note.found {
   box-shadow: 0 0 16px rgba(255,180,84,0.25);
+  color: var(--amber); 
+  border: 1px dashed rgba(255,180,84,0.45);
+  animation: develop 0.8s ease;
+}
+@keyframes develop {
+  from {
+    filter: blur(6px);
+    transform: scale(0.96);
+  }
+  to {
+    filter: blur(0);
+    transform: scale(1);
+  }
 }
 .secret-note .n {
   color: var(--safe);

@@ -30,10 +30,7 @@ document.addEventListener("mousemove", (e) => {
       note.classList.add("found"); 
       foundCount+=1;
 
-      
       counter.innerText=`NOTES FOUND: ${foundCount}/3`;
-     
-
       
     }
     if(foundCount===3){
@@ -57,4 +54,49 @@ safeButton.addEventListener("click",()=>{
   
 
 })
+
+// pixels boxs
+{
+  const flipWrap = document.querySelector('.pixels');
+  flipWrap.innerHTML = `
+    <div class="pixelBox">0100100<span class="bit">0</span></div>
+    <div class="pixelBox">0100100<span class="bit">0</span></div>
+    <div class="pixelBox">0100100<span class="bit">0</span></div>
+    <div class="pixelBox">0100100<span class="bit">0</span></div>
+    <div class="pixelBox">0100100<span class="bit">0</span></div>
+    <div class="pixelBox">0100100<span class="bit">0</span></div>
+    <div class="pixelBox">0100100<span class="bit">0</span></div>
+    <div class="pixelBox">0100100<span class="bit">0</span></div>
+  `;
+
+  const hiddenBits = document.getElementById("hiddenBits");
+  const bigChar = document.getElementById("bigChar");
+
+  const flipCells = document.querySelectorAll(".pixelBox");
+
+  function updateReadout() {
+    let bits = "";
+    flipCells.forEach((cell) => {
+      bits += cell.textContent[7];
+    });
+    hiddenBits.innerText = bits;
+    bigChar.innerText = String.fromCharCode(parseInt(bits, 2));
+  }
+
+  flipCells.forEach((cell) => {
+    cell.addEventListener("click", () => {
+      cell.classList.remove("flipping");
+      void cell.offsetWidth;
+      cell.classList.add("flipping");
+      if (cell.textContent === "01001000") {
+        cell.innerHTML = '0100100<span class="bit">1</span>';
+      } else {
+        cell.innerHTML = '0100100<span class="bit">0</span>';
+      }
+      updateReadout();
+    });
+  });
+
+  updateReadout();
+}
 

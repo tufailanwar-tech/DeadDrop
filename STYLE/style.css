@@ -544,3 +544,66 @@ footer {
 footer .found-all {
   color: var(--green);
 }
+
+
+/* pixels box  */
+
+.pixels {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1.4rem 0;
+}
+.pixelBox {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #170d0e;
+  border: 1px solid #3a2224;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #93736c;
+  user-select: none;
+}
+.pixelBox:hover {
+  border-color: #ff453a;
+}
+.pixelBox .bit {
+  color: #ffb454;
+  font-weight: bold;
+  font-size: 1rem;
+}
+@keyframes bitFlip {
+  0% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.15);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes bitFlash {
+  0% {
+    color: #ffe9c9;
+    text-shadow: 0 0 14px #ffb454;
+  }
+  100% {
+    color: #ffb454;
+    text-shadow: none;
+  }
+}
+
+.pixelBox.flipping {
+  animation: bitFlip 0.22s ease;
+}
+
+.pixelBox.flipping .bit {
+  animation: bitFlash 0.35s ease;
+}
+

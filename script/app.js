@@ -8,6 +8,7 @@ const ctx = previewCanvas.getContext("2d");
 let imgWidth = 0;
 let imgHeight = 0;
 let maxChars = 0;
+let loadedFileName = "image";
 
 dropzone.addEventListener("click", () => {
   fileInput.click();
@@ -16,6 +17,7 @@ dropzone.addEventListener("click", () => {
 fileInput.addEventListener("change", () => {
   if (fileInput.files.length > 0) {
     const file = fileInput.files[0];
+    loadedFileName = file.name.replace(/\.png$/i, "");
     dropzone.querySelector(".drop-hint").innerText = file.name;
     loadImage(file);
   }
@@ -157,3 +159,21 @@ decodeBtn.addEventListener("click", () => {
   }
 });
 
+
+const downloadBtn = document.getElementById("downloadBtn");
+
+downloadBtn.addEventListener("click", () => {
+  if (imgWidth === 0) {
+    statusLine.innerText = "load an image first";
+    return;
+  }
+  previewCanvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = loadedFileName + "_deaddrop.png";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    statusLine.innerText = "downloaded — the PNG carries your message";
+  }, "image/png");
+});

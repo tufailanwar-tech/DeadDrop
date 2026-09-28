@@ -113,3 +113,47 @@ encodeBtn.addEventListener("click", () => {
   hideBits(textToBits(text));
   statusLine.innerText = `hidden ${text.length} chars — download the PNG to keep them`;
 });
+
+const decodeBtn = document.getElementById("decodeBtn");
+
+function readBits(count) {
+  const data = ctx.getImageData(0, 0, imgWidth, imgHeight).data;
+  const bits = [];
+  for (let i = 0; i < count; i++) {
+    const dataIdx = Math.floor(i / 3) * 4 + (i % 3);
+    bits.push(data[dataIdx] & 1);
+  }
+  return bits;
+}
+
+function bitsToText(bits) {
+  let text = "";
+  for (let i = 0; i < bits.length; i += 8) {
+    const byte = bits.slice(i, i + 8).join("");
+    text += String.fromCharCode(parseInt(byte, 2));
+  }
+  return text;
+}
+
+function revealMessage() {
+  const header = readBits(64);
+  if (bitsToText(header.slice(0, 32)) !== "STEG") return null;
+  const len = parseInt(header.slice(32, 64).join(""), 2);
+  const payload = readBits(64 + len * 8).slice(64);
+  return bitsToText(payload);
+}
+
+decodeBtn.addEventListener("click", () => {
+  if (imgWidth === 0) {
+    statusLine.innerText = "load an image first";
+    return;
+  }
+  const msg = revealMessage();
+  if (msg === null) {
+    statusLine.innerText = "no hidden message found";
+  } else {
+    messageInput.value = msg;
+    statusLine.innerText = `revealed ${msg.length} chars`;
+  }
+});
+

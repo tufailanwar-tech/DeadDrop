@@ -8,18 +8,18 @@ const allFound = document.getElementById("allFound");
 let foundCount = 0;
 
 // localStorage: restore safelight state
-if (localStorage.getItem("safelight") === "SAFELIGHT: ON") {
+if (sessionStorage.getItem("safelight") === "SAFELIGHT: ON") {
   safeButton.innerText = "SAFELIGHT: ON";
   uv.classList.remove("open");
   lamp.classList.remove("open");
-}else{
+}else if(sessionStorage.getItem("safelight") === "SAFELIGHT: OFF"){
   safeButton.innerText = "SAFELIGHT: OFF";
   uv.classList.add("open");
   lamp.classList.add("open");
 }
 
 // localStorage: restore found notes
-JSON.parse(localStorage.getItem("foundNotes") || "[]").forEach((i) => {
+JSON.parse(sessionStorage.getItem("foundNotes") || "[]").forEach((i) => {
   notes[i].classList.add("found");
 });
 foundCount = document.querySelectorAll(".secret-note.found").length;
@@ -55,9 +55,9 @@ document.addEventListener("mousemove", (e) => {
 
       // localStorage: remember which note was found
       const idx = [...notes].indexOf(note);
-      const found = JSON.parse(localStorage.getItem("foundNotes") || "[]");
+      const found = JSON.parse(sessionStorage.getItem("foundNotes") || "[]");
       found.push(idx);
-      localStorage.setItem("foundNotes", JSON.stringify(found));
+      sessionStorage.setItem("foundNotes", JSON.stringify(found));
 
     }
     if(foundCount===3){
@@ -80,7 +80,7 @@ safeButton.addEventListener("click",()=>{
   }
 
   // localStorage: remember safelight state
-  localStorage.setItem("safelight", safeButton.innerText);
+  sessionStorage.setItem("safelight", safeButton.innerText);
 
 })
 
@@ -104,7 +104,7 @@ safeButton.addEventListener("click",()=>{
   const flipCells = document.querySelectorAll(".pixelBox");
 
   // localStorage: restore flipped bits
-  const savedBits = localStorage.getItem("flipperBits");
+  const savedBits = sessionStorage.getItem("flipperBits");
   if (savedBits && savedBits.length === 8) {
     flipCells.forEach((cell, i) => {
       cell.innerHTML = `0100100<span class="bit">${savedBits[i]}</span>`;
@@ -119,7 +119,7 @@ safeButton.addEventListener("click",()=>{
     hiddenBits.innerText = bits;
     bigChar.innerText = String.fromCharCode(parseInt(bits, 2));
     // localStorage: remember the bits
-    localStorage.setItem("flipperBits", bits);
+    sessionStorage.setItem("flipperBits", bits);
   }
 
   flipCells.forEach((cell) => {

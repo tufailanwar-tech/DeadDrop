@@ -23,9 +23,8 @@ fileInput.addEventListener("change", () => {
   }
 });
 
-
-function loadImage(file){
-  if (file.name.toLowerCase().endsWith(".png")){
+function loadImage(file) {
+  if (file.name.toLowerCase().endsWith(".png")) {
     const img = new Image();
     img.onload = () => {
       previewCanvas.width = img.width;
@@ -37,11 +36,8 @@ function loadImage(file){
       previewMeta.innerText = `${file.name} — ${img.width}x${img.height}`;
       statusLine.innerText = "image loaded — type a message";
       URL.revokeObjectURL(img.src);
-
-
     };
     img.src = URL.createObjectURL(file);
-
   } else {
     statusLine.innerText = "only PNG images — JPEG destroys hidden data";
   }
@@ -50,16 +46,16 @@ function loadImage(file){
 const messageInput = document.getElementById("messageInput");
 const capacityText = document.getElementById("capacityText");
 const capacityFill = document.getElementById("capacityFill");
+const passwordInput = document.getElementById("passwordInput");
 
-messageInput.addEventListener("input",()=>{
+messageInput.addEventListener("input", () => {
   const typed = messageInput.value.length;
   capacityText.innerText = `${typed} / ${maxChars} chars`;
   const pct = maxChars > 0 ? (typed / maxChars) * 100 : 0;
   capacityFill.style.width = Math.min(pct, 100) + "%";
-})
+});
 
-
-function textToBits(text) {
+function textToBits(text, marker = "STEG") {
   const bits = [];
 
   function pushByte(code) {
@@ -70,7 +66,7 @@ function textToBits(text) {
   }
 
   for (let i = 0; i < 4; i++) {
-    pushByte("STEG".charCodeAt(i));
+    pushByte(marker.charCodeAt(i));
   }
 
   const lenBin = text.length.toString(2).padStart(32, "0");
@@ -85,7 +81,6 @@ function textToBits(text) {
   return bits;
 }
 
-
 const encodeBtn = document.getElementById("encodeBtn");
 
 function hideBits(bits) {
@@ -98,8 +93,9 @@ function hideBits(bits) {
   ctx.putImageData(imageData, 0, 0);
 }
 
-encodeBtn.addEventListener("click", () => {
+encodeBtn.addEventListener("click", async () => {
   const text = messageInput.value;
+  const password = passwordInput.value;
   if (imgWidth === 0) {
     statusLine.innerText = "load an image first";
     return;
@@ -108,12 +104,20 @@ encodeBtn.addEventListener("click", () => {
     statusLine.innerText = "type a message first";
     return;
   }
-  if (text.length > maxChars) {
+  let payload = text;
+  let marker = "STEG";
+  if (password) {
+    payload = await encryptMessage(text, password);
+    marker = "LOCK";
+  }
+  if (payload.length > maxChars) {
     statusLine.innerText = "message too long for this image";
     return;
   }
-  hideBits(textToBits(text));
-  statusLine.innerText = `hidden ${text.length} chars — download the PNG to keep them`;
+  hideBits(textToBits(payload, marker));
+  statusLine.innerText = password
+    ? `locked ${text.length} chars — keep the password safe`
+    : `hidden ${text.length} chars — download the PNG to keep them`;
 });
 
 const decodeBtn = document.getElementById("decodeBtn");
@@ -139,26 +143,85 @@ function bitsToText(bits) {
 
 function revealMessage() {
   const header = readBits(64);
-  if (bitsToText(header.slice(0, 32)) !== "STEG") return null;
+  const marker = bitsToText(header.slice(0, 32));
+  if (marker !== "STEG" && marker !== "LOCK") return null;
   const len = parseInt(header.slice(32, 64).join(""), 2);
   const payload = readBits(64 + len * 8).slice(64);
-  return bitsToText(payload);
+  return { marker: marker, text: bitsToText(payload) };
 }
 
-decodeBtn.addEventListener("click", () => {
+decodeBtn.addEventListener("click", async () => {
   if (imgWidth === 0) {
     statusLine.innerText = "load an image first";
     return;
   }
-  const msg = revealMessage();
-  if (msg === null) {
+  const found = revealMessage();
+  if (!found) {
     statusLine.innerText = "no hidden message found";
+    return;
+  }
+  if (found.marker === "STEG") {
+    messageInput.value = found.text;
+    statusLine.innerText = `revealed ${found.text.length} chars`;
   } else {
-    messageInput.value = msg;
-    statusLine.innerText = `revealed ${msg.length} chars`;
+    const password = passwordInput.value;
+    if (!password) {
+      statusLine.innerText = "this image is locked — enter the password";
+      return;
+    }
+    try {
+      const text = await decryptMessage(found.text, password);
+      messageInput.value = text;
+      statusLine.innerText = `unlocked ${text.length} chars`;
+    } catch (e) {
+      statusLine.innerText = "wrong password";
+    }
   }
 });
 
+async function encryptMessage(text, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]
+  );
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+    keyMaterial,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"]
+  );
+  const ct = new Uint8Array(
+    await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, new TextEncoder().encode(text))
+  );
+  const packed = new Uint8Array(16 + 12 + ct.length);
+  packed.set(salt, 0);
+  packed.set(iv, 16);
+  packed.set(ct, 28);
+  let s = "";
+  for (let i = 0; i < packed.length; i++) s += String.fromCharCode(packed[i]);
+  return s;
+}
+
+async function decryptMessage(packedStr, password) {
+  const packed = new Uint8Array(packedStr.length);
+  for (let i = 0; i < packedStr.length; i++) packed[i] = packedStr.charCodeAt(i);
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]
+  );
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: packed.slice(0, 16), iterations: 100000, hash: "SHA-256" },
+    keyMaterial,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"]
+  );
+  const pt = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: packed.slice(16, 28) }, key, packed.slice(28)
+  );
+  return new TextDecoder().decode(pt);
+}
 
 const downloadBtn = document.getElementById("downloadBtn");
 

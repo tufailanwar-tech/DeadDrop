@@ -7,6 +7,27 @@ const counter = document.getElementById("counter");
 const allFound = document.getElementById("allFound");
 let foundCount = 0;
 
+// localStorage: restore safelight state
+if (localStorage.getItem("safelight") === "SAFELIGHT: ON") {
+  safeButton.innerText = "SAFELIGHT: ON";
+  uv.classList.remove("open");
+  lamp.classList.remove("open");
+}else{
+  safeButton.innerText = "SAFELIGHT: OFF";
+  uv.classList.add("open");
+  lamp.classList.add("open");
+}
+
+// localStorage: restore found notes
+JSON.parse(localStorage.getItem("foundNotes") || "[]").forEach((i) => {
+  notes[i].classList.add("found");
+});
+foundCount = document.querySelectorAll(".secret-note.found").length;
+counter.innerText = `NOTES FOUND: ${foundCount}/3`;
+if (foundCount === 3) {
+  allFound.textContent = "◈ ALL NOTES DEVELOPED — the darkroom gives up its secrets.";
+}
+
 document.addEventListener("mousemove", (e) => {
   lamp.style.left = `${e.clientX}px`;
   lamp.style.top = `${e.clientY}px`;
@@ -27,11 +48,17 @@ document.addEventListener("mousemove", (e) => {
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     if(distance < 120){
-      note.classList.add("found"); 
+      note.classList.add("found");
       foundCount+=1;
 
       counter.innerText=`NOTES FOUND: ${foundCount}/3`;
-      
+
+      // localStorage: remember which note was found
+      const idx = [...notes].indexOf(note);
+      const found = JSON.parse(localStorage.getItem("foundNotes") || "[]");
+      found.push(idx);
+      localStorage.setItem("foundNotes", JSON.stringify(found));
+
     }
     if(foundCount===3){
       allFound.textContent = "◈ ALL NOTES DEVELOPED — the darkroom gives up its secrets.";
@@ -51,7 +78,9 @@ safeButton.addEventListener("click",()=>{
     uv.classList.add("open");
     lamp.classList.add("open");
   }
-  
+
+  // localStorage: remember safelight state
+  localStorage.setItem("safelight", safeButton.innerText);
 
 })
 
@@ -60,10 +89,10 @@ safeButton.addEventListener("click",()=>{
   const flipWrap = document.querySelector('.pixels');
   flipWrap.innerHTML = `
     <div class="pixelBox">0100100<span class="bit">0</span></div>
+    <div class="pixelBox">0100100<span class="bit">1</span></div>
     <div class="pixelBox">0100100<span class="bit">0</span></div>
     <div class="pixelBox">0100100<span class="bit">0</span></div>
-    <div class="pixelBox">0100100<span class="bit">0</span></div>
-    <div class="pixelBox">0100100<span class="bit">0</span></div>
+    <div class="pixelBox">0100100<span class="bit">1</span></div>
     <div class="pixelBox">0100100<span class="bit">0</span></div>
     <div class="pixelBox">0100100<span class="bit">0</span></div>
     <div class="pixelBox">0100100<span class="bit">0</span></div>
@@ -74,6 +103,14 @@ safeButton.addEventListener("click",()=>{
 
   const flipCells = document.querySelectorAll(".pixelBox");
 
+  // localStorage: restore flipped bits
+  const savedBits = localStorage.getItem("flipperBits");
+  if (savedBits && savedBits.length === 8) {
+    flipCells.forEach((cell, i) => {
+      cell.innerHTML = `0100100<span class="bit">${savedBits[i]}</span>`;
+    });
+  }
+
   function updateReadout() {
     let bits = "";
     flipCells.forEach((cell) => {
@@ -81,6 +118,8 @@ safeButton.addEventListener("click",()=>{
     });
     hiddenBits.innerText = bits;
     bigChar.innerText = String.fromCharCode(parseInt(bits, 2));
+    // localStorage: remember the bits
+    localStorage.setItem("flipperBits", bits);
   }
 
   flipCells.forEach((cell) => {
@@ -99,4 +138,3 @@ safeButton.addEventListener("click",()=>{
 
   updateReadout();
 }
-

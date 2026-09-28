@@ -82,3 +82,34 @@ function textToBits(text) {
 
   return bits;
 }
+
+
+const encodeBtn = document.getElementById("encodeBtn");
+
+function hideBits(bits) {
+  const imageData = ctx.getImageData(0, 0, imgWidth, imgHeight);
+  const data = imageData.data;
+  for (let i = 0; i < bits.length; i++) {
+    const dataIdx = Math.floor(i / 3) * 4 + (i % 3);
+    data[dataIdx] = (data[dataIdx] & 0xFE) | bits[i];
+  }
+  ctx.putImageData(imageData, 0, 0);
+}
+
+encodeBtn.addEventListener("click", () => {
+  const text = messageInput.value;
+  if (imgWidth === 0) {
+    statusLine.innerText = "load an image first";
+    return;
+  }
+  if (text.length === 0) {
+    statusLine.innerText = "type a message first";
+    return;
+  }
+  if (text.length > maxChars) {
+    statusLine.innerText = "message too long for this image";
+    return;
+  }
+  hideBits(textToBits(text));
+  statusLine.innerText = `hidden ${text.length} chars — download the PNG to keep them`;
+});

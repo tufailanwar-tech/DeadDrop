@@ -172,7 +172,9 @@ downloadBtn.addEventListener("click", () => {
     const a = document.createElement("a");
     a.href = url;
     a.download = loadedFileName + "_deaddrop.png";
+    document.body.appendChild(a);
     a.click();
+    a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
     statusLine.innerText = "downloaded — the PNG carries your message";
   }, "image/png");

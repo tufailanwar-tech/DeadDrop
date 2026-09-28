@@ -57,3 +57,28 @@ messageInput.addEventListener("input",()=>{
 })
 
 
+function textToBits(text) {
+  const bits = [];
+
+  function pushByte(code) {
+    const bin = code.toString(2).padStart(8, "0");
+    for (let i = 0; i < 8; i++) {
+      bits.push(Number(bin[i]));
+    }
+  }
+
+  for (let i = 0; i < 4; i++) {
+    pushByte("STEG".charCodeAt(i));
+  }
+
+  const lenBin = text.length.toString(2).padStart(32, "0");
+  for (let i = 0; i < 32; i++) {
+    bits.push(Number(lenBin[i]));
+  }
+
+  for (let i = 0; i < text.length; i++) {
+    pushByte(text.charCodeAt(i));
+  }
+
+  return bits;
+}

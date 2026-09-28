@@ -7,6 +7,7 @@ const statusLine = document.getElementById("statusLine");
 const ctx = previewCanvas.getContext("2d");
 let imgWidth = 0;
 let imgHeight = 0;
+let maxChars = 0;
 
 dropzone.addEventListener("click", () => {
   fileInput.click();
@@ -30,12 +31,29 @@ function loadImage(file){
       ctx.drawImage(img, 0, 0);
       imgWidth = img.width;
       imgHeight = img.height;
+      maxChars = Math.floor((imgWidth * imgHeight * 3 - 64) / 8);
       previewMeta.innerText = `${file.name} — ${img.width}x${img.height}`;
       statusLine.innerText = "image loaded — type a message";
       URL.revokeObjectURL(img.src);
+
+
     };
     img.src = URL.createObjectURL(file);
+
   } else {
     statusLine.innerText = "only PNG images — JPEG destroys hidden data";
   }
 }
+
+const messageInput = document.getElementById("messageInput");
+const capacityText = document.getElementById("capacityText");
+const capacityFill = document.getElementById("capacityFill");
+
+messageInput.addEventListener("input",()=>{
+  const typed = messageInput.value.length;
+  capacityText.innerText = `${typed} / ${maxChars} chars`;
+  const pct = maxChars > 0 ? (typed / maxChars) * 100 : 0;
+  capacityFill.style.width = Math.min(pct, 100) + "%";
+})
+
+

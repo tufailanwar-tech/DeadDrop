@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeadDrop — darkroom console</title>
+  <link rel="stylesheet" href="STYLE/app.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">DEADDROP</div>
+    <div class="topbar-sub">darkroom console</div>
+    <a class="back" href="index.html">← landing</a>
+  </header>
+
+  <main class="console">
+
+    <section class="tray">
+      <h2><span class="tray-no">01</span> image</h2>
+
+      <div class="dropzone" id="dropzone">
+        <p class="drop-hint">drop image here</p>
+        <p class="drop-sub">or click to browse — PNG only</p>
+        <input type="file" id="fileInput" accept="image/png" hidden>
+      </div>
+
+      <div class="preview">
+        <h3>preview</h3>
+        <canvas id="previewCanvas"></canvas>
+        <p class="preview-meta" id="previewMeta">no image loaded</p>
+      </div>
+    </section>
+
+    <section class="tray">
+      <h2><span class="tray-no">02</span> message</h2>
+
+      <label class="field">
+        <span>secret message</span>
+        <textarea id="messageInput" rows="5" placeholder="type what the image should carry..."></textarea>
+      </label>
+
+      <label class="field">
+        <span>password <em>(optional)</em></span>
+        <input type="password" id="passwordInput" placeholder="leave empty for no encryption">
+      </label>
+
+      <div class="capacity">
+        <div class="capacity-top">
+          <span>capacity</span>
+          <span id="capacityText">0 / 0 chars</span>
+        </div>
+        <div class="capacity-bar">
+          <div id="capacityFill"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="encodeBtn" class="btn primary">hide message</button>
+        <button id="decodeBtn" class="btn">reveal message</button>
+        <button id="downloadBtn" class="btn ghost">download png</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="statusbar">
+    <span id="statusLine">ready — drop an image to begin</span>
+  </footer>
+
+</body>
+</html>

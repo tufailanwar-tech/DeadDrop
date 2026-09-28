@@ -1,0 +1,255 @@
+:root {
+  --bg: #0e0809;
+  --panel: #170d0e;
+  --line: #3a2224;
+  --ink: #f0e4dc;
+  --dim: #93736c;
+  --safe: #ff453a;
+  --amber: #ffb454;
+  --green: #7ddf9a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  min-height: 100vh;
+  padding-bottom: 3rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  font-size: 1.4rem;
+  letter-spacing: 0.35em;
+  color: var(--safe);
+}
+
+.topbar-sub {
+  color: var(--dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.back {
+  margin-left: auto;
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.back:hover {
+  color: var(--amber);
+}
+
+.console {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.tray {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.5rem;
+}
+
+.tray h2 {
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 1.2rem;
+}
+
+.tray-no {
+  color: var(--amber);
+  margin-right: 0.6rem;
+}
+
+.dropzone {
+  border: 2px dashed var(--line);
+  border-radius: 8px;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+.dropzone:hover {
+  border-color: var(--safe);
+}
+
+.drop-hint {
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+}
+
+.drop-sub {
+  color: var(--dim);
+  font-size: 0.8rem;
+}
+
+.preview {
+  margin-top: 1.5rem;
+}
+
+.preview h3 {
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 0.8rem;
+}
+
+.preview canvas {
+  width: 100%;
+  display: block;
+  background: #000;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.preview-meta {
+  color: var(--dim);
+  font-size: 0.8rem;
+  margin-top: 0.6rem;
+  font-family: "Courier New", monospace;
+}
+
+.field {
+  display: block;
+  margin-bottom: 1.2rem;
+}
+
+.field span {
+  display: block;
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 0.5rem;
+}
+
+.field em {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.field textarea,
+.field input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  padding: 0.8rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.9rem;
+}
+
+.field textarea:focus,
+.field input:focus {
+  outline: none;
+  border-color: var(--amber);
+}
+
+.capacity {
+  margin-bottom: 1.5rem;
+}
+
+.capacity-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 0.5rem;
+}
+
+.capacity-bar {
+  height: 8px;
+  background: var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#capacityFill {
+  height: 100%;
+  width: 0%;
+  background: var(--amber);
+  border-radius: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  flex: 1;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn:hover {
+  border-color: var(--amber);
+}
+
+.btn.primary {
+  background: var(--safe);
+  border-color: var(--safe);
+  color: #0e0809;
+  font-weight: bold;
+}
+
+.btn.ghost {
+  flex: 0 0 100%;
+  color: var(--dim);
+}
+
+.statusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.8rem 2rem;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  font-family: "Courier New", monospace;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+@media (max-width: 800px) {
+  .console {
+    grid-template-columns: 1fr;
+  }
+}
